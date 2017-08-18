@@ -1,3 +1,4 @@
+let crypto = require('crypto')
 
 let express = require('express')
 let bodyParser = require('body-parser')
@@ -5,8 +6,12 @@ let bodyParser = require('body-parser')
 let fetch = require('node-fetch')
 let baseUrl = 'https://www.funfunforum.com'
 let apiKey = '95dd6ff1568aee96381f31bbb3f2fbf4653ae33ff426dec7dc2250f85da6ab7a'
+let webhookSecret = 'cA3yDzaQsJquW}TjzyQKz'
 
-
+let isRequestValid = require('./isrequestvalid').bind(null, {
+  crypto,
+  webhookSecret
+})
 
 let assignBadge = require('./assignbadge').bind(null, {
   fetch,
@@ -22,8 +27,9 @@ let getAllUsernames = require('./getallusernames').bind(null, {
 
 let serve = require('./serve').bind(null, {
   express,
+  bodyParser,
   assignBadge,
-  bodyParser
+  isRequestValid
 })
 
 serve()

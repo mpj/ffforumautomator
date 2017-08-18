@@ -4,6 +4,7 @@
   "dependencies": {
     "body-parser": "^1.17.2",
     "express": "^4.15.4",
+    "express-async-wrap": "^1.0.0",
     "node-fetch": "^1.7.2"
   },
   "scripts": {
