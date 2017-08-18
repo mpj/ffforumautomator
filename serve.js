@@ -5,8 +5,12 @@ function serve({ express, bodyParser }) {
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: false }))
   
-  app.get('/webhook', (req, res) => {
+  app.post('/webhook', (req, res) => {
     console.log('req.body', req.body)
+  })
+  
+  app.get('/', (req,res) => {
+    res.send('k')
   })
   
   const port = process.env.PORT || 3001
