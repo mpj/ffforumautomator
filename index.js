@@ -2,6 +2,7 @@ let crypto = require('crypto')
 
 let express = require('express')
 let bodyParser = require('body-parser')
+let wrap = require('express-async-wrap')
 
 let fetch = require('node-fetch')
 let baseUrl = 'https://www.funfunforum.com'
@@ -28,6 +29,7 @@ let getAllUsernames = require('./getallusernames').bind(null, {
 let serve = require('./serve').bind(null, {
   express,
   bodyParser,
+  wrap,
   assignBadge,
   isRequestValid
 })
