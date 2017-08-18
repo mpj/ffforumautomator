@@ -4,7 +4,8 @@
   "dependencies": {
     "body-parser": "^1.17.2",
     "express": "^4.15.4",
-    "micro": "latest"
+    "micro": "latest",
+    "node-fetch": "^1.7.2"
   },
   "scripts": {
     "start": "micro"
