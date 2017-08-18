@@ -36,21 +36,3 @@ let serve = require('./serve').bind(null, {
 })
 
 serve()
-/*
-async function go() {
-  let usernames = await getAllUsernames()
-  console.log('usernames', usernames)
-  
-  for(username of usernames) {
-    await assignBadge({
-      apiKey,
-      username,
-      badgeId: SPECIAL_FOREVER_BADGE_ID
-    })
-    console.log(`assigned badge to ${username}`)
-  }
-}
-
-go().then(() => console.log('done!'))*/
-
-
