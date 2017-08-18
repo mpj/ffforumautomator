@@ -8,6 +8,6 @@
     "node-fetch": "^1.7.2"
   },
   "scripts": {
-    "start": "micro"
+    "start": "node serve"
   }
 }
