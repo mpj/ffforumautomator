@@ -1,11 +1,11 @@
-function serve({ express, bodyParser, wrap, assignBadge, isRequestValid }) {
+function serve({ process, express, bodyParser, wrap, assignBadge, isRequestValid }) {
 
   let app = express()
   
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: false }))
   
-  app.post('/webhook', wrap(async (req, res) => {
+  app.post('/webhook', wrap(async function(req, res) {
     if (!isRequestValid)
       req.status(403).send('invalid signature')
 

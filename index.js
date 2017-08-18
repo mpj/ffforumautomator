@@ -27,6 +27,7 @@ let getAllUsernames = require('./getallusernames').bind(null, {
 })
 
 let serve = require('./serve').bind(null, {
+  process,
   express,
   bodyParser,
   wrap,
