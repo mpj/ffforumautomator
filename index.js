@@ -5,7 +5,7 @@ let bodyParser = require('body-parser')
 let fetch = require('node-fetch')
 let baseUrl = 'https://www.funfunforum.com'
 let apiKey = '95dd6ff1568aee96381f31bbb3f2fbf4653ae33ff426dec7dc2250f85da6ab7a'
-let SPECIAL_FOREVER_BADGE_ID = 102
+
 
 
 let assignBadge = require('./assignbadge').bind(null, {
@@ -22,6 +22,7 @@ let getAllUsernames = require('./getallusernames').bind(null, {
 
 let serve = require('./serve').bind(null, {
   express,
+  assignBadge,
   bodyParser
 })
 

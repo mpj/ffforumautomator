@@ -1,4 +1,4 @@
-function serve({ express, bodyParser }) {
+function serve({ express, bodyParser, assignBadge }) {
 
   let app = express()
   
@@ -6,10 +6,22 @@ function serve({ express, bodyParser }) {
   app.use(bodyParser.urlencoded({ extended: false }))
   
   app.post('/webhook', (req, res) => {
-
-    console.log("req.headers['x-discourse-event']", req.headers['x-discourse-event'])
+    if(req.headers['x-discourse-event'] === 'user_created') {
+      let { username } = req.body.user
+      let SPECIAL_FOREVER_BADGE_ID = 102
+      assignBadge({ username, badgeId: SPECIAL_FOREVER_BADGE_ID }).then(x => {
+        console.log(`Assigned special forever badge to ${username}`)
+        res.status(200).send('ok')
+      }).catch(error => {
+        console.error(error)
+        res.status(500)
+      })
+    } else {
+      res.status(200).send('carry on')
+    }
+    
     //console.log('req.body', req.body)
-    res.status(200).send('ok')
+    
   })
 
   app.get('/', (req,res) => {
