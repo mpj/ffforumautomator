@@ -6,8 +6,8 @@ let wrap = require('express-async-wrap')
 
 let fetch = require('node-fetch')
 let baseUrl = 'https://www.funfunforum.com'
-let apiKey = '95dd6ff1568aee96381f31bbb3f2fbf4653ae33ff426dec7dc2250f85da6ab7a'
-let webhookSecret = 'cA3yDzaQsJquW}TjzyQKz'
+let apiKey = process.env.DISCOURSE_API_KEY
+let webhookSecret = process.env.DISCOURSE_WEBHOOK_SECRET
 
 let isRequestValid = require('./isrequestvalid').bind(null, {
   crypto,
