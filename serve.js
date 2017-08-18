@@ -6,6 +6,7 @@ function serve({ express, bodyParser }) {
   app.use(bodyParser.urlencoded({ extended: false }))
   
   app.post('/webhook', (req, res) => {
+    console.log("req.headers['x-discourse-event-type']", req.headers['x-discourse-event-type'])
     console.log('req.body', req.body)
     res.status(200).send('ok')
   })
