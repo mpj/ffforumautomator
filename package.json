@@ -1,0 +1,12 @@
+{
+  "name": "ffforumautomator",
+  "version": "1.0.0",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.4",
+    "micro": "latest"
+  },
+  "scripts": {
+    "start": "micro"
+  }
+}
