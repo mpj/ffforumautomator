@@ -52,8 +52,8 @@ function serve({
 
   const nowInMs = () => Number(new Date())
   
-  const userNamesCacheMaxAge = 1000 * 60 * 60
-  const resultCacheMaxAge = 1000 * 60 * 30
+  const userNamesCacheMaxAge = 1000 * 60 * 30
+  const resultCacheMaxAge = 1000 * 60 * 10
 
   let state = {
     cache: {
@@ -79,7 +79,7 @@ function serve({
       refreshResultCache()
     }
 
-    if (!state.cache.result.data && !state.cache.usernames.data) {
+    if (!state.cache.result.data || !state.cache.usernames.data) {
       return res.status(503).json({ 
         error_code: 'warming_up', 
         error_message: 'Warming up caches, please retry in a minute' 
