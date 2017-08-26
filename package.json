@@ -6,7 +6,8 @@
     "express": "^4.15.4",
     "express-async-wrap": "^1.0.0",
     "node-fetch": "^1.7.2",
-    "query-string": "^5.0.0"
+    "query-string": "^5.0.0",
+    "ramda": "^0.24.1"
   },
   "engines": {
     "node": "^8.4.0"
