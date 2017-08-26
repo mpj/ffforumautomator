@@ -62,6 +62,7 @@ function serve({
     data: null,
     expires: -1
   }
+  /*
   app.get('/hackable-data', wrap(async function(req, res) {
 
     if (resultCache.expires > nowInMs()) {
@@ -105,7 +106,7 @@ function serve({
     }
   
     return res.json(result)
-  }))
+  }))*/
 
   process.on('unhandledRejection', function(reason){
     console.error('Unhandled rejection', reason)
