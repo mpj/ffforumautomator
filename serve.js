@@ -86,7 +86,6 @@ function serve({
 
     let userDatas = []
     for (let username of usernames) {
-      if (username !== 'mpj') continue
       let userData = await getUserByUsername(username)
       userDatas.push(userData)
     }
