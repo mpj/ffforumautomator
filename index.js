@@ -17,6 +17,9 @@ let isRequestValid = require('./isrequestvalid').bind(null, {
   webhookSecret
 })
 
+let getFrom = require('./get-from')({ fetch })
+
+
 let discourseAPIUrl = require('./discourse-api-url').bind(null, {
   baseUrl,
   apiKey,
@@ -28,7 +31,7 @@ let assignBadge = require('./assignbadge')({
   discourseAPIUrl
 })
 
-let getAllUsernames = require('./getallusernames').bind(null, {
+let getAllUsernames = require('./getallusernames')({
   fetch,
   discourseAPIUrl
 })
@@ -39,7 +42,7 @@ let getUserByUsername = require('./getuserbyusername').bind(null, {
 })
 
 let getUserFields = require('./get-user-fields')({
-  fetch,
+  getFrom,
   discourseAPIUrl
 })
 

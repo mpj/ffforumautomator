@@ -87,6 +87,7 @@ function serve({
     state.cache.result.isRefreshing = true
     
     let userFields = await getUserFields()
+
     let jsonField = userFields.find(x => x.name === 'Hackable JSON')
     let fieldId = jsonField.id
 

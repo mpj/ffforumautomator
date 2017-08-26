@@ -1,20 +1,27 @@
-async function getAllUsernames({ fetch, discourseAPIUrl }) {
-  let allUsers = []
-  let page = -1
-  while(true) {
-    page++
-    let apiUrl = discourseAPIUrl(`/admin/users/list/active.json`, `page=${page}`)
-    let users = await fetch(apiUrl)
-      .then(response => {
-        if (response.status !== 200) {
-          throw new Error(`list endpoint returned non-200 status: ${response.status}`)
-        }
-        return response.json()
-      })
-    if (users.length === 0) break
-    allUsers = allUsers.concat(users)
-  }
-  return allUsers.map(x => x.username)
-}
+const R = require('ramda')
+const parseAsJSON = require('./parse-as-json')
+const errorUnlessOK = require('./error-unless-ok')
 
-module.exports = getAllUsernames
+module.exports = ({ fetch, discourseAPIUrl }) => {
+  const 
+    getPage = R.pipe(
+      page => discourseAPIUrl(`/admin/users/list/active.json`, `page=${page}`),
+      R.pipeP(
+        fetch,
+        errorUnlessOK('getPage'),
+        parseAsJSON
+      )
+    ),
+    collectNextPageUntilEnd = (collected = [], page = 0) => result => {
+      return !result || result.length > 0
+        ? getPage(page).then(collectNextPageUntilEnd(collected.concat(result), page + 1))
+        : Promise.resolve(collected)
+    },
+    extractUsernames = R.map(user => user.username)
+  
+  return R.pipeP(
+    () => getPage(0),
+    collectNextPageUntilEnd(),
+    extractUsernames
+  )
+}
