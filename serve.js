@@ -52,16 +52,10 @@ function serve({
 
   const nowInMs = () => Number(new Date())
   
-  const userNamesCacheMaxAge = 1000 * 60 * 30
   const resultCacheMaxAge = 1000 * 60 * 10
 
   let state = {
     cache: {
-      usernames: {
-        isRefreshing: false,
-        data: null,
-        expires: -1
-      },
       result: {
         isRefreshing: false,
         data: null,
@@ -72,14 +66,12 @@ function serve({
 
   app.get('/hackable-data', wrap(async function(req, res) {
 
-    if (state.cache.result &&
-        state.cache.result.expires < nowInMs()
-    ) {
+    if (state.cache.result.expires < nowInMs()) {
       console.log('Result cache expired, issuing refresh ...')
       refreshResultCache()
     }
 
-    if (!state.cache.result.data || !state.cache.usernames.data) {
+    if (!state.cache.result.data) {
       return res.status(503).json({ 
         error_code: 'warming_up', 
         error_message: 'Warming up caches, please retry in a minute' 
@@ -89,20 +81,6 @@ function serve({
     return res.json(state.cache.result.data)
   }))
 
-  async function refreshUsernamesCache() {
-    if (state.cache.usernames.isRefreshing) return
-    
-    state.cache.usernames.isRefreshing = true
-    usernames = await getAllUsernames()
-    console.log(`${usernames.length} usernames loaded.`)
-    state.cache.usernames = {
-      isRefreshing: false,
-      data: usernames, 
-      expires: nowInMs() + userNamesCacheMaxAge
-    }
-    refreshResultCache()
-  }
-
   async function refreshResultCache() {
     if (state.cache.result.isRefreshing) return
 
@@ -111,17 +89,8 @@ function serve({
     let userFields = await getUserFields()
     let jsonField = userFields.find(x => x.name === 'Hackable JSON')
     let fieldId = jsonField.id
-    
-    if (state.cache.usernames.expires < nowInMs()) {
-      console.log('Usernames cache expired, issuing refresh ...')
-      refreshUsernamesCache()
-      state.cache.result.isRefreshing = false
-      return
-    }
 
-    console.log('Usernames cache loaded ...')
-
-    let usernames = state.cache.usernames.data
+    let usernames = await getAllUsernames()
 
     let allUserDatas = []
     let batch = []
@@ -139,8 +108,9 @@ function serve({
       }
     }
     await processBatch()
-    
 
+    console.log('All userdata loaded.')
+    
     let result = R.pipe(
       R.filter(x => x.user.user_fields && x.user.user_fields['' + fieldId]),
       R.map(userData => ({
