@@ -4,10 +4,13 @@ async function getAllUsernames({ fetch, discourseAPIUrl }) {
   while(true) {
     page++
     let apiUrl = discourseAPIUrl(`/admin/users/list/active.json`, `page=${page}`)
-    console.log('apiUrl', apiUrl)
-    let users = await fetch(apiUrl).then(x => x.json())
-      
-    console.log('fetches some users page', page)
+    let users = await fetch(apiUrl)
+      .then(response => {
+        if (response.status !== 200) {
+          throw new Error(`list endpoint returned non-200 status: ${response.status}`)
+        }
+        return response.json()
+      })
     if (users.length === 0) break
     allUsers = allUsers.concat(users)
   }

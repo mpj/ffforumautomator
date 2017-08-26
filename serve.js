@@ -52,44 +52,98 @@ function serve({
 
   const nowInMs = () => Number(new Date())
   
-  const userNamesCacheMaxAge = 1000 * 60 * 10
-  let userNamesCache = {
-    data: null,
-    expires: -1
+  const userNamesCacheMaxAge = 1000 * 60 * 10 * 2
+  const resultCacheMaxAge = 1000 * 10 * 60 * 2
+
+  let state = {
+    cache: {
+      usernames: {
+        isRefreshing: false,
+        data: null,
+        expires: -1
+      },
+      result: {
+        isRefreshing: false,
+        data: null,
+        expires: -1
+      }
+    }
   }
-  const resultCacheMaxAge = 1000 * 10
-  let resultCache = {
-    data: null,
-    expires: -1
-  }
-  /*
+
+  
+  
   app.get('/hackable-data', wrap(async function(req, res) {
 
-    if (resultCache.expires > nowInMs()) {
-      return res.json(resultCache.data)
+    if (state.cache.result &&
+        state.cache.result.expires < nowInMs()
+    ) {
+      console.log('Result cache expired, issuing refresh ...')
+      refreshResultCache()
     }
-      
-    let userFields = await getUserFields()
 
+    if (!state.cache.result.data && !state.cache.usernames.data) {
+      return res.status(503).json({ 
+        error_code: 'warming_up', 
+        error_message: 'Warming up, please retry in a minute' 
+      })
+    }
+
+    return res.json(state.cache.result.data)
+  }))
+
+  async function refreshUsernamesCache() {
+    if (state.cache.usernames.isRefreshing) return
+    
+    state.cache.usernames.isRefreshing = true
+    usernames = await getAllUsernames()
+    console.log('Usernames loaded!')
+    console.log('usernames', usernames)
+    state.cache.usernames = {
+      isRefreshing: false,
+      data: usernames, 
+      expires: nowInMs() + userNamesCacheMaxAge
+    }
+    refreshResultCache()
+  }
+
+  async function refreshResultCache() {
+    if (state.cache.result.isRefreshing) return
+
+    state.cache.result.isRefreshing = true
+    
+    let userFields = await getUserFields()
     let jsonField = userFields.find(x => x.name === 'Hackable JSON')
     let fieldId = jsonField.id
     
-    let usernames 
-    if (userNamesCache.expires < nowInMs()) {
-      usernames = await getAllUsernames()
-      userNamesCache = {
-        data: usernames, 
-        expires: nowInMs() + userNamesCacheMaxAge
-      }
-    } else {
-      usernames = userNamesCache.data
+    if (state.cache.usernames.expires < nowInMs()) {
+      console.log('Usernames cache expired, issuing refresh ...')
+      refreshUsernamesCache()
+      state.cache.result.isRefreshing = false
+      return
     }
 
-    let userDatas = []
-    for (let username of usernames) {
-      let userData = await getUserByUsername(username)
-      userDatas.push(userData)
+    console.log('Usernames cache loaded ...')
+
+    let usernames = state.cache.usernames.data
+
+    let allUserDatas = []
+    let batch = []
+    async function processBatch() {
+      let userDatas = await Promise.all(batch.map(getUserByUsername))
+      allUserDatas = allUserDatas.concat(userDatas)
+      console.log(`Loaded usernames ${batch.join(', ')}`)
+      batch = []
     }
+    for (let username of usernames) {
+      if (username !== 'mpj') continue
+      if (batch.length < 10) {
+        batch.push(username)
+      } else {
+        await processBatch()
+      }
+    }
+    await processBatch()
+    
 
     let result = R.pipe(
       R.filter(x => x.user.user_fields && x.user.user_fields['' + fieldId]),
@@ -98,15 +152,14 @@ function serve({
         username: userData.user.username,
         hackable_json: userData.user.user_fields['' + fieldId]
       }))
-    )(userDatas)
+    )(allUserDatas)
 
-    resultCache = {
+    state.cache.result = {
+      isRefreshing: false,
       data: result, 
       expires: nowInMs() + resultCacheMaxAge
     }
-  
-    return res.json(result)
-  }))*/
+  }
 
   process.on('unhandledRejection', function(reason){
     console.error('Unhandled rejection', reason)
