@@ -146,7 +146,12 @@ function serve({
       R.map(userData => ({
         username: userData.user.username,
         hackable_json: userData.user.user_fields['' + fieldId]
-      }))
+      })),
+      R.reduce((lookup, x) => {
+        lookup[x.username] = x
+        return lookup
+      }, {}),
+      R.values
     )(allUserDatas)
 
     state.cache.result = {
