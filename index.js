@@ -1,6 +1,7 @@
 let crypto = require('crypto')
 
 let express = require('express')
+let cors = require('cors')
 let bodyParser = require('body-parser')
 let wrap = require('express-async-wrap')
 let queryString = require('query-string')
@@ -49,6 +50,7 @@ let getUserFields = require('./get-user-fields')({
 let serve = require('./serve').bind(null, {
   process,
   express,
+  cors,
   bodyParser,
   wrap,
   assignBadge,

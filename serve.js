@@ -2,7 +2,8 @@ let R = require('ramda')
 
 function serve({ 
   process, 
-  express, 
+  express,
+  cors,
   bodyParser, 
   wrap, 
   assignBadge, 
@@ -13,6 +14,8 @@ function serve({
 }) {
 
   let app = express()
+
+  app.use(cors())
   
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: false }))
