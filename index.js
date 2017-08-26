@@ -10,6 +10,8 @@ let baseUrl = 'https://www.funfunforum.com'
 let apiKey = process.env.DISCOURSE_API_KEY
 let webhookSecret = process.env.DISCOURSE_WEBHOOK_SECRET
 
+let postAsJSONTo = require('./post-as-json-to')({ fetch })
+
 let isRequestValid = require('./isrequestvalid').bind(null, {
   crypto,
   webhookSecret
@@ -22,7 +24,7 @@ let discourseAPIUrl = require('./discourse-api-url').bind(null, {
 })
 
 let assignBadge = require('./assignbadge')({
-  fetch,
+  postAsJSONTo,
   discourseAPIUrl
 })
 
