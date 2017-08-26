@@ -52,8 +52,8 @@ function serve({
 
   const nowInMs = () => Number(new Date())
   
-  const userNamesCacheMaxAge = 1000 * 60 * 10 * 2
-  const resultCacheMaxAge = 1000 * 10 * 60 * 2
+  const userNamesCacheMaxAge = 1000 * 60 * 60
+  const resultCacheMaxAge = 1000 * 60 * 30
 
   let state = {
     cache: {
@@ -70,8 +70,6 @@ function serve({
     }
   }
 
-  
-  
   app.get('/hackable-data', wrap(async function(req, res) {
 
     if (state.cache.result &&
@@ -96,8 +94,7 @@ function serve({
     
     state.cache.usernames.isRefreshing = true
     usernames = await getAllUsernames()
-    console.log('Usernames loaded!')
-    console.log('usernames', usernames)
+    console.log(`${usernames.length} usernames loaded.`)
     state.cache.usernames = {
       isRefreshing: false,
       data: usernames, 
@@ -131,7 +128,7 @@ function serve({
     async function processBatch() {
       let userDatas = await Promise.all(batch.map(getUserByUsername))
       allUserDatas = allUserDatas.concat(userDatas)
-      console.log(`Loaded usernames ${batch.join(', ')}`)
+      console.log(`Loaded user data for ${batch.join(', ')}`)
       batch = []
     }
     for (let username of usernames) {
@@ -146,7 +143,6 @@ function serve({
 
     let result = R.pipe(
       R.filter(x => x.user.user_fields && x.user.user_fields['' + fieldId]),
-      R.uniqBy(R.prop('username')),
       R.map(userData => ({
         username: userData.user.username,
         hackable_json: userData.user.user_fields['' + fieldId]
