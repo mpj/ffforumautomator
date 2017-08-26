@@ -1,4 +1,16 @@
-function serve({ process, express, bodyParser, wrap, assignBadge, isRequestValid }) {
+let R = require('ramda')
+
+function serve({ 
+  process, 
+  express, 
+  bodyParser, 
+  wrap, 
+  assignBadge, 
+  isRequestValid,
+  getAllUsernames,
+  getUserByUsername,
+  getUserFields
+}) {
 
   let app = express()
   
@@ -37,6 +49,64 @@ function serve({ process, express, bodyParser, wrap, assignBadge, isRequestValid
   app.get('/', (req,res) => {
     res.send('k')
   })
+
+  const nowInMs = () => Number(new Date())
+  
+  const userNamesCacheMaxAge = 1000 * 60 * 10
+  let userNamesCache = {
+    data: null,
+    expires: -1
+  }
+  const resultCacheMaxAge = 1000 * 10
+  let resultCache = {
+    data: null,
+    expires: -1
+  }
+  app.get('/hackable-data', wrap(async function(req, res) {
+
+    if (resultCache.expires > nowInMs()) {
+      return res.json(resultCache.data)
+    }
+      
+    let userFields = await getUserFields()
+
+    let jsonField = userFields.find(x => x.name === 'Hackable JSON')
+    let fieldId = jsonField.id
+    
+    let usernames 
+    if (userNamesCache.expires < nowInMs()) {
+      usernames = await getAllUsernames()
+      userNamesCache = {
+        data: usernames, 
+        expires: nowInMs() + userNamesCacheMaxAge
+      }
+    } else {
+      usernames = userNamesCache.data
+    }
+
+    let userDatas = []
+    for (let username of usernames) {
+      if (username !== 'mpj') continue
+      let userData = await getUserByUsername(username)
+      userDatas.push(userData)
+    }
+
+    let result = R.pipe(
+      R.filter(x => x.user.user_fields && x.user.user_fields['' + fieldId]),
+      R.uniqBy(R.prop('username')),
+      R.map(userData => ({
+        username: userData.user.username,
+        hackable_json: userData.user.user_fields['' + fieldId]
+      }))
+    )(userDatas)
+
+    resultCache = {
+      data: result, 
+      expires: nowInMs() + resultCacheMaxAge
+    }
+  
+    return res.json(result)
+  }))
 
   process.on('unhandledRejection', function(reason){
     console.error('Unhandled rejection', reason)

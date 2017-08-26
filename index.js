@@ -3,6 +3,7 @@ let crypto = require('crypto')
 let express = require('express')
 let bodyParser = require('body-parser')
 let wrap = require('express-async-wrap')
+let queryString = require('query-string')
 
 let fetch = require('node-fetch')
 let baseUrl = 'https://www.funfunforum.com'
@@ -20,10 +21,25 @@ let assignBadge = require('./assignbadge').bind(null, {
   apiKey
 })
 
+let discourseAPIUrl = require('./discourse-api-url').bind(null, {
+  baseUrl,
+  apiKey,
+  queryString
+})
+
 let getAllUsernames = require('./getallusernames').bind(null, {
   fetch,
-  baseUrl,
-  apiKey
+  discourseAPIUrl
+})
+
+let getUserByUsername = require('./getuserbyusername').bind(null, {
+  fetch,
+  discourseAPIUrl
+})
+
+let getUserFields = require('./get-user-fields').bind(null, {
+  fetch,
+  discourseAPIUrl
 })
 
 let serve = require('./serve').bind(null, {
@@ -32,7 +48,10 @@ let serve = require('./serve').bind(null, {
   bodyParser,
   wrap,
   assignBadge,
-  isRequestValid
+  isRequestValid,
+  getAllUsernames,
+  getUserByUsername,
+  getUserFields
 })
 
 serve()
