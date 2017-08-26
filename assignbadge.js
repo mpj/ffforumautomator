@@ -1,17 +1,27 @@
-function assignBadge({ fetch, baseUrl, apiKey }, { username, badgeId }) {
-  return fetch(`${baseUrl}/user_badges.json?api_key=${apiKey}&api_username=system`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
+let R = require('ramda')
+
+const makeAssignBadge = ({ fetch, discourseAPIUrl }) => {
+  const 
+    makeBody = ({ username, badgeId }) => ({
       username,
       badge_id: badgeId
-    })
-  }).then(response => {
-    if (response.status !== 200) throw new Error('assign badge failed with status code' + response.status)
-    return true
-  })
+    }),
+    postAsJSONTo = uri => body => fetch(uri, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    }),
+    checkStatus = response => {
+      if (response.status !== 200) 
+        throw new Error('assign badge failed with status code' + response.status)
+      return true
+    }
+
+  return R.pipeP(
+    makeBody,
+    postAsJSONTo(discourseAPIUrl('/user_badges.json')),
+    checkStatus
+  )
 }
 
-module.exports = assignBadge
+module.exports = makeAssignBadge

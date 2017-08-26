@@ -1,15 +1,17 @@
 let R = require('ramda')
 
 const makeGetUserFields = ({ fetch, discourseAPIUrl }) => {
-  const fetchFields = () => 
-          fetch(discourseAPIUrl(`/admin/customize/user_fields.json`)),
-        parseAsJSON = x => x.json(),
+  const makeAPIUrl = () => discourseAPIUrl(`/admin/customize/user_fields.json`)
+        parseAsJSON = response => response.json(),
         extractFields = R.prop('user_fields')
 
-  return R.pipeP(
-    fetchFields,
-    parseAsJSON,
-    extractFields
+  return R.pipe(
+    makeAPIUrl,
+    R.pipeP(
+      fetch,
+      parseAsJSON,
+      extractFields
+    )
   )
 }
 

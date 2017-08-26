@@ -15,16 +15,15 @@ let isRequestValid = require('./isrequestvalid').bind(null, {
   webhookSecret
 })
 
-let assignBadge = require('./assignbadge').bind(null, {
-  fetch,
-  baseUrl,
-  apiKey
-})
-
 let discourseAPIUrl = require('./discourse-api-url').bind(null, {
   baseUrl,
   apiKey,
   queryString
+})
+
+let assignBadge = require('./assignbadge')({
+  fetch,
+  discourseAPIUrl
 })
 
 let getAllUsernames = require('./getallusernames').bind(null, {
