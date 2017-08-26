@@ -84,7 +84,7 @@ function serve({
     if (!state.cache.result.data && !state.cache.usernames.data) {
       return res.status(503).json({ 
         error_code: 'warming_up', 
-        error_message: 'Warming up, please retry in a minute' 
+        error_message: 'Warming up caches, please retry in a minute' 
       })
     }
 
@@ -135,7 +135,6 @@ function serve({
       batch = []
     }
     for (let username of usernames) {
-      if (username !== 'mpj') continue
       if (batch.length < 10) {
         batch.push(username)
       } else {
