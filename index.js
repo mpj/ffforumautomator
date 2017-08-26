@@ -37,7 +37,7 @@ let getUserByUsername = require('./getuserbyusername').bind(null, {
   discourseAPIUrl
 })
 
-let getUserFields = require('./get-user-fields').bind(null, {
+let getUserFields = require('./get-user-fields')({
   fetch,
   discourseAPIUrl
 })

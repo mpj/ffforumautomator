@@ -110,23 +110,32 @@ function serve({
     await processBatch()
 
     console.log('All userdata loaded.')
-    
-    let result = R.pipe(
-      R.filter(x => x.user.user_fields && x.user.user_fields['' + fieldId]),
+
+    const 
+      removeDuplicateUsers = R.pipe(
+        R.reduce((lookup, user) => {
+          lookup[user.username] = user
+          return lookup
+        }, {}),
+        R.values
+      ),
+      filterUsersWithField = fieldId => R.filter(userData => 
+        userData.user.user_fields && 
+        userData.user.user_fields['' + fieldId]
+      )
+
+    const makeResult = R.pipe(
+      filterUsersWithField(fieldId),
       R.map(userData => ({
         username: userData.user.username,
         hackable_json: userData.user.user_fields['' + fieldId]
       })),
-      R.reduce((lookup, x) => {
-        lookup[x.username] = x
-        return lookup
-      }, {}),
-      R.values
-    )(allUserDatas)
+      removeDuplicateUsers
+    )
 
     state.cache.result = {
       isRefreshing: false,
-      data: result, 
+      data: makeResult(allUserDatas), 
       expires: nowInMs() + resultCacheMaxAge
     }
   }
@@ -146,5 +155,8 @@ function serve({
     console.log(`Listening on port ${port}!`)
   })
 }
+
+
+
 
 module.exports = serve
