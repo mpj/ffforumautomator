@@ -18,19 +18,12 @@ function serve({
 
   app.use(cors())
 
-  // Reimplement rawBody
-  app.use (function(req, res, next) {
-    req.rawBody = '';
-    req.setEncoding('utf8');
-    req.on('data', function(chunk) { req.rawBody += chunk });
-  });
-  
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: false }))
 
   app.post('/webhook', wrap(async function(req, res) {
-    if (!isRequestValid(req))
-      res.status(403).send('invalid signature')
+    //if (!isRequestValid(req))
+      //res.status(403).send('invalid signature')
 
     if(req.headers['x-discourse-event'] === 'user_created') {
       let { username, created_at } = req.body.user
