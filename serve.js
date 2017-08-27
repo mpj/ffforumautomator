@@ -21,7 +21,7 @@ function serve({
   app.use(bodyParser.urlencoded({ extended: false }))
   
   app.post('/webhook', wrap(async function(req, res) {
-    if (!isRequestValid)
+    if (!isRequestValid) // FIXME: ITS WORKING
       req.status(403).send('invalid signature')
 
     if(req.headers['x-discourse-event'] === 'user_created') {
@@ -43,6 +43,22 @@ function serve({
         console.error(error)
         res.status(500)
       }
+    } else if (req.headers['x-discourse-event'] === 'post_created') {
+      let {
+        username,
+        topic_slug,
+        topic_id,
+        post_number
+      } = req.body.post
+
+      await handlePostCreated({
+        username,
+        topicSlug: topic_slug,
+        topicId: topic_id,
+        postNumber: postNumber
+      })
+      res.status(200).send('ok')
+      
     } else if(req.headers['x-discourse-event'] === 'user_updated') {
 
       let hackableDataCache = state.cache.result.data  
