@@ -8,10 +8,11 @@ let makeHandlePostCreated = ({ assignBadge }) => ({
     return Promise.resolve()
 
   let INTRODUCTION_BADGE_ID = 104
-  return assignBadge({
+  let opts = {
     username,
     badgeId: INTRODUCTION_BADGE_ID,
     reason: `https://www.funfunforum.com/t/${topicId}/${postNumber}`
-  })
+  }
+  return assignBadge(opts)
 }
 module.exports = makeHandlePostCreated
