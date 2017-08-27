@@ -13,6 +13,7 @@ let makeHandlePostCreated = ({ assignBadge }) => ({
     badgeId: INTRODUCTION_BADGE_ID,
     reason: `https://www.funfunforum.com/t/${topicId}/${postNumber}`
   }
+  console.log('opts', opts)
   return assignBadge(opts)
 }
 module.exports = makeHandlePostCreated
