@@ -56,7 +56,7 @@ function serve({
         username,
         topicSlug: topic_slug,
         topicId: topic_id,
-        postNumber: postNumber
+        postNumber: post_number
       })
       res.status(200).send('ok')
 
