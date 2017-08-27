@@ -10,7 +10,8 @@ function serve({
   isRequestValid,
   getAllUsernames,
   getUserByUsername,
-  getUserFields
+  getUserFields,
+  handlePostCreated
 }) {
 
   let app = express()
@@ -58,7 +59,7 @@ function serve({
         postNumber: postNumber
       })
       res.status(200).send('ok')
-      
+
     } else if(req.headers['x-discourse-event'] === 'user_updated') {
 
       let hackableDataCache = state.cache.result.data  

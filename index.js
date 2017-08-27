@@ -32,6 +32,10 @@ let assignBadge = require('./assignbadge')({
   discourseAPIUrl
 })
 
+let handlePostCreated = require('./handle-post-created')({
+  assignBadge
+})
+
 let getAllUsernames = require('./getallusernames')({
   fetch,
   discourseAPIUrl
@@ -57,7 +61,8 @@ let serve = require('./serve').bind(null, {
   isRequestValid,
   getAllUsernames,
   getUserByUsername,
-  getUserFields
+  getUserFields,
+  handlePostCreated
 })
 
 serve()
