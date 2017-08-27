@@ -43,6 +43,21 @@ function serve({
         console.error(error)
         res.status(500)
       }
+    } else if(req.headers['x-discourse-event'] === 'user_updated') {
+
+      let hackableDataCache = state.cache.result.data  
+      if (!hackableDataCache) {
+        res.status(200).send('carry on')
+      } else {
+        let cachedUser = hackableDataCache
+          .find(user => user.username === req.body.user.username)
+        if (cachedUser) {
+          let fieldId = await fetchHackableJSONFieldId()
+          cachedUser.hackable_json = req.body.user.user_fields[''+fieldId]
+        } else {
+          res.status(200).send('carry on')
+        }
+      }
     } else {
       res.status(200).send('carry on')
     }
@@ -84,15 +99,18 @@ function serve({
     return res.json(state.cache.result.data)
   }))
 
+  async function fetchHackableJSONFieldId() {
+    let userFields = await getUserFields()
+    let jsonField = userFields.find(x => x.name === 'Hackable JSON')
+    return jsonField.id
+  }
+
   async function refreshResultCache() {
     if (state.cache.result.isRefreshing) return
 
     state.cache.result.isRefreshing = true
     
-    let userFields = await getUserFields()
-
-    let jsonField = userFields.find(x => x.name === 'Hackable JSON')
-    let fieldId = jsonField.id
+    let fieldId = await fetchHackableJSONFieldId()
 
     let usernames = await getAllUsernames()
 
