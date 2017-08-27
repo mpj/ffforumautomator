@@ -3,9 +3,10 @@ let errorUnlessOK = require('./error-unless-ok')
 
 const makeAssignBadge = ({ postAsJSONTo, discourseAPIUrl }) => {
   const 
-    makeBody = ({ username, badgeId }) => Promise.resolve({
+    makeBody = ({ username, badgeId, reason }) => Promise.resolve({
       username,
-      badge_id: badgeId
+      badge_id: badgeId,
+      reason
     })
 
   return R.pipeP(
