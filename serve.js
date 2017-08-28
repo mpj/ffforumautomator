@@ -32,9 +32,11 @@ function serve({
  
 
   app.post('/webhook', wrap(async function(req, res) {
-    if (!isRequestValid(req))
+    if (!isRequestValid(req)) {
       res.status(403).send('invalid signature')
-
+      return
+    }
+      
     if(req.headers['x-discourse-event'] === 'user_created') {
       let { username, created_at } = req.body.user
       let date = new Date(Date.parse(created_at))
