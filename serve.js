@@ -48,14 +48,9 @@ function serve({
         return
       }
       let SPECIAL_FOREVER_BADGE_ID = 102
-      try {
-        await assignBadge({ username, badgeId: SPECIAL_FOREVER_BADGE_ID })
-        console.log(`Assigned special forever badge to ${username}`)
-        res.status(200).send('ok')
-      } catch(error) {
-        console.error(error)
-        res.status(500)
-      }
+      await assignBadge({ username, badgeId: SPECIAL_FOREVER_BADGE_ID })
+      console.log(`Assigned special forever badge to ${username}`)
+      res.status(200).send('ok')
     } else if (req.headers['x-discourse-event'] === 'post_created') {
       let {
         username,
@@ -78,14 +73,23 @@ function serve({
       if (!hackableDataCache) {
         res.status(200).send('carry on')
       } else {
+        let hackableJSON = req.body.user.user_fields[''+fieldId]
+        if (!hackableJSON) {
+          res.status(200).send('carry on')
+          return
+        }
         let cachedUser = hackableDataCache
           .find(user => user.username === req.body.user.username)
         if (cachedUser) {
           let fieldId = await fetchHackableJSONFieldId()
-          cachedUser.hackable_json = req.body.user.user_fields[''+fieldId]
+          cachedUser.hackable_json = hackableJSON
         } else {
-          res.status(200).send('carry on')
+          hackableDataCache.push({
+            username: req.body.user.username,
+            hackable_json: hackableJSON
+          })
         }
+        res.status(200).send('carry on')
       }
     } else {
       res.status(200).send('carry on')
