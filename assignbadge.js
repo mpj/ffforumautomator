@@ -1,7 +1,7 @@
 let errorUnlessOK = require('./error-unless-ok')
 
-const makeAssignBadge = 
-  ({ postAsJSONTo, discourseAPIUrl }) => 
+const makeAssignBadge =
+  ({ postAsJSONTo, discourseAPIUrl }) =>
   ({ username, badgeId, reason }) =>
     Promise.resolve({
       username,
@@ -9,6 +9,6 @@ const makeAssignBadge =
       reason
     })
     .then(postAsJSONTo(discourseAPIUrl('/user_badges.json')))
-    .then(errorUnlessOK)
+    .then(errorUnlessOK('assignBadge'))
 
 module.exports = makeAssignBadge
