@@ -7,7 +7,7 @@ module.exports = bus => {
       $call: [ 'discourse-api-url', { path: `/admin/customize/user_fields.json` } ]
     }))
     .onCallback('discourse-api-url', url => ({
-      $call: [ 'fetch', [ url ] ]
+      $call: [ 'fetch', { url } ]
     }))
     .onCallback('fetch', response => {
       errorUnlessOK('getUserFields')(response)
