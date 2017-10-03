@@ -14,7 +14,8 @@
     "ramda": "^0.24.1",
     "sinon": "^3.2.1",
     "sinon-expect": "^0.3.0",
-    "supersniff": "^1.1.0"
+    "supersniff": "^1.1.0",
+    "uuid": "^3.1.0"
   },
   "engines": {
     "node": "^8.4.0"

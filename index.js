@@ -11,6 +11,7 @@ let bus = createBus({ process })
 
 require('./routines/config')(bus)
 require('./routines/discourse-api-url')(bus)
+require('./routines/get-user-fields')(bus)
 require('./routines/querystring')(bus)
 
 let fetch = require('node-fetch')
@@ -45,12 +46,8 @@ let getUserByUsername = require('./getuserbyusername').bind(null, {
   fetch
 })
 
-let getUserFields = require('./get-user-fields')({
-  fetch,
-  bus
-})
-
 let serve = require('./serve').bind(null, {
+  bus,
   process,
   express,
   cors,
@@ -60,7 +57,6 @@ let serve = require('./serve').bind(null, {
   isRequestValid,
   getAllUsernames,
   getUserByUsername,
-  getUserFields,
   handlePostCreated
 })
 

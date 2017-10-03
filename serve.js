@@ -10,7 +10,6 @@ function serve({
   isRequestValid,
   getAllUsernames,
   getUserByUsername,
-  getUserFields,
   handlePostCreated
 }) {
 
@@ -134,7 +133,7 @@ function serve({
   }))
 
   async function fetchHackableJSONFieldId() {
-    let userFields = await getUserFields()
+    let userFields = await bus.call('get-user-fields')
     let jsonField = userFields.find(x => x.name === 'Hackable JSON')
     return jsonField.id
   }
