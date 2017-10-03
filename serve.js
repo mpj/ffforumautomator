@@ -119,7 +119,7 @@ function serve({
   app.get('/hackable-data', wrap(async function(req, res) {
 
     if (state.cache.result.expires < nowInMs()) {
-      console.log('Result cache expired, issuing refresh ...')
+      console.log('Hackable data cache expired, issuing refresh ...')
       refreshResultCache()
     }
 
@@ -153,7 +153,6 @@ function serve({
     async function processBatch() {
       let userDatas = await Promise.all(batch.map(getUserByUsername))
       allUserDatas = allUserDatas.concat(userDatas)
-      console.log(`Loaded user data for ${batch.join(', ')}`)
       batch = []
     }
     for (let username of usernames) {
@@ -164,8 +163,6 @@ function serve({
       }
     }
     await processBatch()
-
-    console.log('All userdata loaded.')
 
     const
       removeDuplicateUsers = R.pipe(
