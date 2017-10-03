@@ -1,14 +1,20 @@
 let crypto = require('crypto')
+let R = require('ramda')
 
+let { createBus } = require('./snurra')
 let express = require('express')
 let cors = require('cors')
 let bodyParser = require('body-parser')
 let wrap = require('express-async-wrap')
-let queryString = require('query-string')
+
+let bus = createBus({ process })
+
+require('./routines/config')(bus)
+require('./routines/discourse-api-url')(bus)
+require('./routines/querystring')(bus)
 
 let fetch = require('node-fetch')
-let baseUrl = 'https://www.funfunforum.com'
-let apiKey = process.env.DISCOURSE_API_KEY
+
 let webhookSecret = process.env.DISCOURSE_WEBHOOK_SECRET
 
 let postAsJSONTo = require('./post-as-json-to')({ fetch })
@@ -20,16 +26,9 @@ let isRequestValid = require('./isrequestvalid').bind(null, {
 
 let getFrom = require('./get-from')({ fetch })
 
-
-let discourseAPIUrl = require('./discourse-api-url').bind(null, {
-  baseUrl,
-  apiKey,
-  queryString
-})
-
 let assignBadge = require('./assignbadge')({
-  postAsJSONTo,
-  discourseAPIUrl
+  bus,
+  postAsJSONTo
 })
 
 let handlePostCreated = require('./handle-post-created')({
@@ -37,18 +36,18 @@ let handlePostCreated = require('./handle-post-created')({
 })
 
 let getAllUsernames = require('./getallusernames')({
-  fetch,
-  discourseAPIUrl
+  bus,
+  fetch
 })
 
 let getUserByUsername = require('./getuserbyusername').bind(null, {
-  fetch,
-  discourseAPIUrl
+  bus,
+  fetch
 })
 
 let getUserFields = require('./get-user-fields')({
-  getFrom,
-  discourseAPIUrl
+  fetch,
+  bus
 })
 
 let serve = require('./serve').bind(null, {

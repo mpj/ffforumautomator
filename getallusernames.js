@@ -2,15 +2,13 @@ const R = require('ramda')
 const parseAsJSON = require('./parse-as-json')
 const errorUnlessOK = require('./error-unless-ok')
 
-module.exports = ({ fetch, discourseAPIUrl }) => {
-  const 
-    getPage = R.pipe(
-      page => discourseAPIUrl(`/admin/users/list/active.json`, `page=${page}`),
-      R.pipeP(
-        fetch,
-        errorUnlessOK('getPage'),
-        parseAsJSON
-      )
+module.exports = ({ fetch, bus }) => {
+  const
+    getPage = R.pipeP(
+      page => bus.call('discourse-api-url', { path: '/admin/users/list/active.json', query: `page=${page}` }),
+      fetch,
+      errorUnlessOK('getPage'),
+      parseAsJSON
     ),
     collectNextPageUntilEnd = (collected = [], page = 0) => result => {
       return !result || result.length > 0
@@ -18,7 +16,7 @@ module.exports = ({ fetch, discourseAPIUrl }) => {
         : Promise.resolve(collected)
     },
     extractUsernames = R.map(user => user.username)
-  
+
   return R.pipeP(
     () => getPage(0),
     collectNextPageUntilEnd(),

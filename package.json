@@ -7,18 +7,20 @@
     "expect.js": "^0.3.1",
     "express": "^4.15.4",
     "express-async-wrap": "^1.0.0",
+    "kind-of": "^5.0.2",
     "mocha": "^3.5.0",
     "node-fetch": "^1.7.2",
     "query-string": "^5.0.0",
     "ramda": "^0.24.1",
     "sinon": "^3.2.1",
-    "sinon-expect": "^0.3.0"
+    "sinon-expect": "^0.3.0",
+    "supersniff": "^1.1.0"
   },
   "engines": {
     "node": "^8.4.0"
   },
   "scripts": {
-    "start": "node .",
+    "start": "node --trace-warnings .",
     "test": "mocha --watch *.test.js"
   }
 }

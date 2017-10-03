@@ -2,14 +2,14 @@ let R = require('ramda')
 let errorUnlessOK = require('./error-unless-ok')
 let parseAsJSON = require('./parse-as-json')
 
-const makeGetUserFields = ({ getFrom, discourseAPIUrl }) => {
+const makeGetUserFields = ({ fetch, discourseAPIUrl }) => {
   const promised = fn => R.pipe(fn, x => Promise.resolve(x))
   const extractFields = R.prop('user_fields')
 
   return R.pipeP(
-    getFrom(discourseAPIUrl(`/admin/customize/user_fields.json`)),
+    () => bus.call('discourse-api-url', { path: `/admin/customize/user_fields.json` }),
+    fetch,
     errorUnlessOK('getUserFields'),
-    //x => console.log('x',x),
     parseAsJSON,
     promised(extractFields)
   )
