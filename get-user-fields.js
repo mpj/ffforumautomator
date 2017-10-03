@@ -2,7 +2,7 @@ let R = require('ramda')
 let errorUnlessOK = require('./error-unless-ok')
 let parseAsJSON = require('./parse-as-json')
 
-const makeGetUserFields = ({ fetch, discourseAPIUrl }) => {
+const makeGetUserFields = ({ bus, discourseAPIUrl }) => {
   const promised = fn => R.pipe(fn, x => Promise.resolve(x))
   const extractFields = R.prop('user_fields')
 
