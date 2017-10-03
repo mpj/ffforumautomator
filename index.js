@@ -13,6 +13,7 @@ require('./routines/config')(bus)
 require('./routines/discourse-api-url')(bus)
 require('./routines/get-user-fields')(bus)
 require('./routines/querystring')(bus)
+require('./routines/fetch')(bus)
 
 let fetch = require('node-fetch')
 
