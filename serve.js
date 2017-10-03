@@ -1,12 +1,12 @@
 let R = require('ramda')
 
-function serve({ 
-  process, 
+function serve({
+  process,
   express,
   cors,
-  bodyParser, 
-  wrap, 
-  assignBadge, 
+  bodyParser,
+  wrap,
+  assignBadge,
   isRequestValid,
   getAllUsernames,
   getUserByUsername,
@@ -18,7 +18,7 @@ function serve({
 
   app.use(cors())
 
-  // pretty hacky solution to get rawbody, too tired 
+  // pretty hacky solution to get rawbody, too tired
   // to figure better solution out
   // From: https://coderwall.com/p/qrjfcw/capture-raw-post-body-in-express-js
   let rawBodySaver = function (req, res, buf, encoding) {
@@ -29,14 +29,14 @@ function serve({
   app.use(bodyParser.json({ verify: rawBodySaver }))
   app.use(bodyParser.urlencoded({ extended: false, verify: rawBodySaver }))
   app.use(bodyParser.raw({ verify: rawBodySaver, type: function () { return true } }))
- 
+
 
   app.post('/webhook', wrap(async function(req, res) {
     if (!isRequestValid(req)) {
       res.status(403).send('invalid signature')
       return
     }
-      
+
     if(req.headers['x-discourse-event'] === 'user_created') {
       let { username, created_at } = req.body.user
       let date = new Date(Date.parse(created_at))
@@ -69,10 +69,12 @@ function serve({
 
     } else if(req.headers['x-discourse-event'] === 'user_updated') {
 
-      let hackableDataCache = state.cache.result.data  
+      let hackableDataCache = state.cache.result.data
       if (!hackableDataCache) {
         res.status(200).send('carry on')
       } else {
+        let fieldId = await fetchHackableJSONFieldId()
+
         let hackableJSON = req.body.user.user_fields[''+fieldId]
         if (!hackableJSON) {
           res.status(200).send('carry on')
@@ -81,7 +83,6 @@ function serve({
         let cachedUser = hackableDataCache
           .find(user => user.username === req.body.user.username)
         if (cachedUser) {
-          let fieldId = await fetchHackableJSONFieldId()
           cachedUser.hackable_json = hackableJSON
         } else {
           hackableDataCache.push({
@@ -94,7 +95,7 @@ function serve({
     } else {
       res.status(200).send('carry on')
     }
-    
+
   }))
 
   app.get('/', (req,res) => {
@@ -102,7 +103,7 @@ function serve({
   })
 
   const nowInMs = () => Number(new Date())
-  
+
   const resultCacheMaxAge = 1000 * 60 * 10
 
   let state = {
@@ -123,9 +124,9 @@ function serve({
     }
 
     if (!state.cache.result.data) {
-      return res.status(503).json({ 
-        error_code: 'warming_up', 
-        error_message: 'Warming up caches, please retry in a minute' 
+      return res.status(503).json({
+        error_code: 'warming_up',
+        error_message: 'Warming up caches, please retry in a minute'
       })
     }
 
@@ -142,7 +143,7 @@ function serve({
     if (state.cache.result.isRefreshing) return
 
     state.cache.result.isRefreshing = true
-    
+
     let fieldId = await fetchHackableJSONFieldId()
 
     let usernames = await getAllUsernames()
@@ -166,7 +167,7 @@ function serve({
 
     console.log('All userdata loaded.')
 
-    const 
+    const
       removeDuplicateUsers = R.pipe(
         R.reduce((lookup, user) => {
           lookup[user.username] = user
@@ -174,8 +175,8 @@ function serve({
         }, {}),
         R.values
       ),
-      filterUsersWithField = fieldId => R.filter(userData => 
-        userData.user.user_fields && 
+      filterUsersWithField = fieldId => R.filter(userData =>
+        userData.user.user_fields &&
         userData.user.user_fields['' + fieldId]
       )
 
@@ -190,7 +191,7 @@ function serve({
 
     state.cache.result = {
       isRefreshing: false,
-      data: makeResult(allUserDatas), 
+      data: makeResult(allUserDatas),
       expires: nowInMs() + resultCacheMaxAge
     }
   }
@@ -204,7 +205,7 @@ function serve({
     console.error('Uncaught exception', err)
     process.exit(1)
   });
-  
+
   const port = process.env.PORT || 3001
   app.listen(port, () => {
     console.log(`Listening on port ${port}!`)
