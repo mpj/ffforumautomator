@@ -1,6 +1,7 @@
 let R = require('ramda')
 
 function serve({
+  bus,
   process,
   express,
   cors,
