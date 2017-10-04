@@ -7,7 +7,6 @@ function serve({
   cors,
   bodyParser,
   wrap,
-  assignBadge,
   isRequestValid,
   getAllUsernames,
   getUserByUsername,
@@ -48,7 +47,7 @@ function serve({
         return
       }
       let SPECIAL_FOREVER_BADGE_ID = 102
-      await assignBadge({ username, badgeId: SPECIAL_FOREVER_BADGE_ID })
+      await bus.call('assign-badge', { username, badgeId: SPECIAL_FOREVER_BADGE_ID })
       console.log(`Assigned special forever badge to ${username}`)
       res.status(200).send('ok')
     } else if (req.headers['x-discourse-event'] === 'post_created') {

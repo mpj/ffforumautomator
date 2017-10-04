@@ -14,12 +14,12 @@ require('./routines/discourse-api-url')(bus)
 require('./routines/get-user-fields')(bus)
 require('./routines/querystring')(bus)
 require('./routines/fetch')(bus)
+require('./routines/post-json')(bus)
+require('./routines/assign-badge')(bus)
 
 let fetch = require('node-fetch')
 
 let webhookSecret = process.env.DISCOURSE_WEBHOOK_SECRET
-
-let postAsJSONTo = require('./post-as-json-to')({ fetch })
 
 let isRequestValid = require('./isrequestvalid').bind(null, {
   crypto,
@@ -28,13 +28,8 @@ let isRequestValid = require('./isrequestvalid').bind(null, {
 
 let getFrom = require('./get-from')({ fetch })
 
-let assignBadge = require('./assignbadge')({
-  bus,
-  postAsJSONTo
-})
-
 let handlePostCreated = require('./handle-post-created')({
-  assignBadge
+  bus
 })
 
 let getAllUsernames = require('./getallusernames')({
@@ -54,7 +49,6 @@ let serve = require('./serve').bind(null, {
   cors,
   bodyParser,
   wrap,
-  assignBadge,
   isRequestValid,
   getAllUsernames,
   getUserByUsername,
