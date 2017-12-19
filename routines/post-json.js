@@ -12,11 +12,11 @@ module.exports = bus =>
     }]
   }))
   .onCallback('fetch', ({ status, id }) =>
-    response.status !== 200
+    status !== 200
       ? { status, body: null }
       : {
-        $setState: { status: response.status },
-        $call: ['fetch-response-json', response.id ]
+        $setState: { status: status },
+        $call: ['fetch-response-json', id ]
       }
   )
   .onCallback('fetch-response-json', (body, {status}) => ({
