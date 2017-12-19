@@ -31,6 +31,7 @@ module.exports = bus => {
         .then(response => {
           if (response.rateLimited) {
             backoff = backoff * 2
+            console.log('rate limited, backing off', backoff)
             return wait(backoff)
               .then(() => throttledFetch(url, opts))
           }
