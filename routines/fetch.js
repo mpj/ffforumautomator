@@ -26,7 +26,7 @@ module.exports = bus => {
       })
 
   bus.impure.onCall('fetch', ({ url, opts }) => {
-    let initialBackoff = 1000
+    let initialBackoff = 30000
     let backoff = initialBackoff
 
     const throttledFetch = (url, opts) =>
