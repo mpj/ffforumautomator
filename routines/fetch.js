@@ -11,6 +11,7 @@ module.exports = bus => {
       .then(response => {
         if (response.status === 429) {
           return {
+            url,
             rateLimited: true,
           }
         }
@@ -18,6 +19,7 @@ module.exports = bus => {
         responses[id] = response
         return {
           id,
+          url,
           rateLimited: false,
           status: response.status
         }

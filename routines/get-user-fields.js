@@ -10,6 +10,7 @@ module.exports = bus => {
       $call: [ 'fetch', { url } ]
     }))
     .onCallback('fetch', response => {
+      console.log('got user fields back', response.status, response.url)
       errorUnlessOK('getUserFields')(response)
       return { $call: [ 'fetch-response-json', response.id ] }
     })
