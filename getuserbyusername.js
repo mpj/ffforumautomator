@@ -6,7 +6,7 @@ function getUserByUsername({ fetch, bus }, username) {
       if (status !== 200) {
         throw new Error(`list endpoint returned non-200 status: ${status}`)
       }
-      return bus.call('fetch-response-json', { id })
+      return bus.call('fetch-response-json', id)
     })
 }
 
