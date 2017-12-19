@@ -24,7 +24,8 @@ module.exports = bus => {
       })
 
   bus.impure.onCall('fetch', ({ url, opts }) => {
-    let backoff = 1000
+    let initialBackoff = 1000
+    let backoff = initialBackoff
 
     const throttledFetch = (url, opts) =>
       standardFetch(url, opts)
@@ -34,6 +35,9 @@ module.exports = bus => {
             console.log('rate limited, backing off', backoff)
             return wait(backoff)
               .then(() => throttledFetch(url, opts))
+          }
+          if (backoff !== initialBackoff) {
+            console.log('rate limit lifted, lets go!')
           }
           return response
         })
