@@ -38,9 +38,7 @@ module.exports = bus => {
             return wait(backoff)
               .then(() => throttledFetch(url, opts))
           }
-          if (backoff !== initialBackoff) {
-            console.log('rate limit lifted, lets go!')
-          }
+          console.log('Request url:', url)
           return response
         })
 
