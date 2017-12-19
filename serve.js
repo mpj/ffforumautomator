@@ -155,7 +155,7 @@ function serve({
       batch = []
     }
     for (let username of usernames) {
-      if (batch.length < 10) {
+      if (batch.length < 5) {
         batch.push(username)
       } else {
         await processBatch()
