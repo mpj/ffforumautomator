@@ -26,15 +26,18 @@ module.exports = bus => {
   bus.impure.onCall('fetch', ({ url, opts }) => {
     let backoff = 1000
 
-    return standardFetch(url, opts)
-      .then(response => {
-        if (response.rateLimited) {
-          backoff = backoff * 2
-          return wait(backoff)
-            .then(() => standardFetch(url, opts))
-        }
-        return response
-      })
+    const throttledFetch = (url, opts) =>
+      standardFetch(url, opts)
+        .then(response => {
+          if (response.rateLimited) {
+            backoff = backoff * 2
+            return wait(backoff)
+              .then(() => throttledFetch(url, opts))
+          }
+          return response
+        })
+
+    return throttledFetch(url, opts)
   })
 
   bus.impure.onCall('fetch-response-json', id => {
