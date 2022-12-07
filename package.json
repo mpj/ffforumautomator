@@ -5,7 +5,7 @@
     "body-parser": "^1.17.2",
     "cors": "^2.8.4",
     "expect.js": "^0.3.1",
-    "express": "^4.15.4",
+    "express": "^4.17.3",
     "express-async-wrap": "^1.0.0",
     "kind-of": "^5.0.2",
     "mocha": "^3.5.0",
